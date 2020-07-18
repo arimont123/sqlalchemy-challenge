@@ -3,9 +3,7 @@
 ## Step 1 - Climate Analysis and Exploration
 Used Python and SQLAlchemy to do basic climate analysis and data exploration of a climate database. All of the following analysis was completed using SQLAlchemy ORM queries, Pandas, and Matplotlib.
 
-*The final_script.ipynb contains the completed climate analysis and data exploration.
-
-* Choose a start date and end date for your trip. Make sure that your vacation range is approximately 3-15 days total.
+*The Final_Analysis.ipynb contains the completed climate analysis and data exploration.
 
 * Used SQLAlchemy `create_engine` to connect to the sqlite database.
 
@@ -55,7 +53,7 @@ After completing the initial analysis, designed a Flask API based on the queries
 
   * Home page.
 
-  * List all routes that are available.
+  * Lists all routes that are available.
 
 * `/api/v1.0/precipitation`
 
@@ -70,15 +68,15 @@ After completing the initial analysis, designed a Flask API based on the queries
 * `/api/v1.0/tobs`
   * Query the dates and temperature observations of the most active station for the last year of data.
   
-  * Return a JSON list of temperature observations (TOBS) for the previous year.
+  * Returned a JSON list of temperature observations (TOBS) for the previous year.
 
 * `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
 
-  * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
+  * Returned a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
 
-  * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
+  * When given the start only, calculated `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
 
-  * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
+  * When given the start and the end date, calculated the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
 
 ## Hints
 
