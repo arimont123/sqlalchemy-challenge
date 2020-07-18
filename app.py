@@ -35,6 +35,7 @@ def welcome():
         f"/api/v1.0/<start>/<end>"
     )
 
+#Returns a dictionary of date and preciptation amount for the last year of data in Hawaii
 from collections import defaultdict 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
@@ -43,7 +44,6 @@ def precipitation():
     #Query results
     one_year_ago = dt.date(2017, 8, 23) - dt.timedelta(days=365)
     results= session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= one_year_ago).all()
-    
     session.close()
     #Create dictionary of date (key) and prcp (value)
     date_prcp_dict = defaultdict(list)
@@ -52,39 +52,43 @@ def precipitation():
         
     return jsonify(date_prcp_dict)  
 
+#Returns a JSON list of stations from the dataset.
 @app.route("/api/v1.0/stations")
 def stations():
     #Create session
     session = Session(engine)
     #Query a list of stations from the dataset
     station_list = session.query(Measurement.station).group_by(Measurement.station).all()
-    
     session.close()
-    #return f"List of stations in Hawaii:<br/>"
-    return jsonify(station_list)
+    station_list_dict = {"List of temperature stations in Hawaii": station_list }
+    return jsonify(station_list_dict)
 
+#Query the dates and temperature observations of the most active station for the last year of data.
 @app.route("/api/v1.0/tobs")
 def tobs():
     #Create session
-    session = Session(engine)
-    #Query the dates and temperature observations of the most active station for the last year of data.
+    session = Session(engine) 
+    #Find date for the previous year of data
     one_year_ago = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    #Query date and temperature for the most active station and for last year of data
     tobs_results = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281').\
     filter(Measurement.date >= one_year_ago).all()
     session.close()    
     #Return a JSON list of temperature observations (TOBS) for the previous year
-    return jsonify(tobs_results)
+    station_dict = {"Date and Temparture Observations for station USC00519281 From 2016-8-23 to 2017-8-23": tobs_results}
+    return jsonify(station_dict)
 
+#Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range
 from datetime import datetime
-#Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
 @app.route("/api/v1.0/<start>")
 def temp_data(start):
 #When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
     session = Session(engine)
-    #Correct format split to get individual dates 3 integers 
+    #Correct format for datetime 
     corrected = start.replace("-", "")
     start_date = datetime.strptime(corrected, '%Y%m%d').strftime('%Y-%m-%d') 
     
+    #Query data
     max_temp = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= start_date).all()
     min_temp = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start_date).all()
     avg_temp = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= start_date).all()
@@ -94,8 +98,8 @@ def temp_data(start):
     
     return jsonify(temp_dict)
 
-@app.route("/api/v1.0/<start>/<end>")
 #When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
+@app.route("/api/v1.0/<start>/<end>")
 def start_end(start,end):
     session = Session(engine)
     corrected_start = start.replace("-", "")
